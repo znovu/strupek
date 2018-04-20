@@ -1,0 +1,7 @@
+{
+  "compilationType": "scala",
+  "files": [
+    { "path" : "src/main/scala/badlam/Playfield.scala"}
+
+  ]
+}
