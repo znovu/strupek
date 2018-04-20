@@ -5,12 +5,13 @@ import java.nio.file.Paths
 import org.scalatest.{FunSpec, Matchers}
 import org.typelevel.scalatest.DisjunctionValues._
 import org.scalatest.OptionValues._
+import pl.setblack.strupek.nakolanie.TestResources
 import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
 
 class CodeProjectServiceTest extends FunSpec with Matchers {
 
   describe("a code project") {
-    val test1 = Paths.get(classOf[CodeModuleServiceTest].getResource("/test1").toURI)
+    val test1 = TestResources.test1
     val codeModule = new CodeModule(test1)
 
     val project = codeModule.getProject("calc")

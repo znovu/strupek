@@ -3,6 +3,7 @@ package pl.setblack.strupek.nakolanie.scanner
 import java.nio.file.Paths
 
 import org.scalatest.{FunSpec, Matchers}
+import pl.setblack.strupek.nakolanie.TestResources
 import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
 
 
@@ -11,7 +12,7 @@ class CodeModuleServiceTest extends FunSpec with Matchers {
   import org.typelevel.scalatest.DisjunctionValues._
 
   describe("codemodule") {
-    val testFolder = Paths.get(classOf[CodeModuleServiceTest].getResource("/test1").toURI)
+    val testFolder = TestResources.test1
     val service = new CodeModule(testFolder)
     it("should read any projects") {
       service.getProjects().isRight should be(true)

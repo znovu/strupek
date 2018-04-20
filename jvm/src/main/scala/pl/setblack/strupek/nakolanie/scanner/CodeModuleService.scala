@@ -2,10 +2,9 @@ package pl.setblack.strupek.nakolanie.scanner
 
 import java.nio.file.{Files, Path}
 
-import scalaz.{-\/, Maybe, \/, \/-}
 import pl.setblack.strupek.nakolanie.code.Errors._
-import pl.setblack.strupek.nakolanie.scanner.CodeProject.{CodeProjectService, Project}
-import upickle.default.read
+import pl.setblack.strupek.nakolanie.scanner.CodeProject.CodeProjectService
+import scalaz.{-\/, \/, \/-}
 
 import scala.io.Source
 
@@ -52,10 +51,6 @@ object CodeModule {
       }
     }
   }
-
-
-
-
 
 }
 

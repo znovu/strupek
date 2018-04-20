@@ -18,31 +18,28 @@ object CodeProject {
 
 
     def readFile(path: String): \/[Errors.ModuleError, FileContents] =
-      getAlternativeContents(path) flatMap {
-        alt => if ( alt.contains(defaultVersion)) {
-          \/-(FileContents( alt.getOrElse(defaultVersion,"???"), alt - defaultVersion) ) //TODO remove geOrElse
-        } else {
-          -\/(Errors.NoDefaultVersion(name, path))
-        }
-      }
+      getAlternativeContents(path) flatMap (
+        alt => alt.get(defaultVersion)
+                    .map{ defaultContent => \/-(FileContents(defaultContent, alt - defaultVersion))}
+                    .getOrElse(-\/(Errors.NoDefaultVersion(name, path)))
+    )
 
     private def readFileVersion(path: String, alternative: String) =
       module getContents s"${projectPrefix}/${alternative}/${path}"
 
-    private def getAlternatives  =
+    private def getAlternatives =
       module getFolders projectPrefix
 
-    private def getAlternativeContents(path : String) : \/[Errors.ModuleError, Map[String, String] ] =
-      getAlternatives map (_.map { alt => (alt, readFileVersion(path, alt))}
-        .filter( onlyExisting)
-        .map ( emptyIfMissing) toMap )
+    private def getAlternativeContents(path: String): \/[Errors.ModuleError, Map[String, String]] =
+      getAlternatives map (_.map ( alt => (alt, readFileVersion(path, alt)) )
+        .filter(onlyExisting)
+        .map(emptyIfMissing) toMap)
 
-    private val emptyIfMissing = (tup:(String, \/[_,String])) => (tup._1, tup._2.getOrElse(""))
+    private val emptyIfMissing = (tup: (String, \/[_, String])) => (tup._1, tup._2.getOrElse(""))
 
-    private val onlyExisting = (tup:(String, \/[_,String])) => tup._2.isRight
+    private val onlyExisting = (tup: (String, \/[_, String])) => tup._2.isRight
 
   }
-
 
 
 }
