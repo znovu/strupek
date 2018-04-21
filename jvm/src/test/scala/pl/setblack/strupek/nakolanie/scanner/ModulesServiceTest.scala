@@ -1,19 +1,18 @@
 package pl.setblack.strupek.nakolanie.scanner
 
 import org.scalacheck.Gen
-import org.scalacheck.Gen.{alphaNumChar, listOf}
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{FunSpec, Matchers}
 import pl.setblack.strupek.nakolanie.TestResources
 import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
-import pl.setblack.strupek.nakolanie.scanner.InputService.FilesInputService
+import pl.setblack.strupek.nakolanie.scanner.ModulesService.FileBasedModulesService
 import scalaz.Maybe.Empty
 
 
-class InputServiceTest extends FunSpec with Matchers with PropertyChecks{
-  describe("input service") {
+class ModulesServiceTest extends FunSpec with Matchers with PropertyChecks{
+  describe("modules service") {
     val path = TestResources.modules
-    val inputService = new FilesInputService(path)
+    val inputService = new FileBasedModulesService(path)
     it("should return emtpy for non existing path") {
       inputService.codeModule("some non existin path")._2 should be(Empty[CodeModule]())
     }
@@ -33,7 +32,7 @@ class InputServiceTest extends FunSpec with Matchers with PropertyChecks{
       forAll (randomStr) {
         (name : String) =>
           val module = inputService.codeModule(name)._2
-          if ( name.contains(".")) {
+          if ( name.matches(""".*[\.\$\%\'\"\#\@\;\:\\\/]+.*""") ) {
             module should be (Empty())
           }
       }

@@ -11,10 +11,12 @@ object Code {
 
   private implicit def rwCompilationFile: RW[CompilationFile] = macroRW
 
-  private implicit def rwProject: RW[Project] = macroRW
+  implicit def rwProject: RW[Project] = macroRW
 
   val readProjectFromString = (str: String) => {
     import upickle.default._
     read[Project](str)
   }
+
+
 }

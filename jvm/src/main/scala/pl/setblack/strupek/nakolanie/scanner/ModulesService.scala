@@ -7,16 +7,16 @@ import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
 import scalaz.Maybe
 
 
-object InputService {
+object ModulesService {
 
-  type InputChance = (InputService, Maybe[CodeModule])
+  type InputChance = (ModulesService, Maybe[CodeModule])
 
-  trait InputService {
+  trait ModulesService {
     def codeModule(name: String): InputChance
   }
 
-  class FilesInputService(private val base: Path) extends InputService {
-    override def codeModule(name: String): (InputService, Maybe[CodeModule]) = {
+  class FileBasedModulesService(private val base: Path) extends ModulesService {
+    override def codeModule(name: String): (ModulesService, Maybe[CodeModule]) = {
       val modulePath = base.resolve(name)
       if (isBadName(name) ||  !Files.isDirectory(modulePath)) {
         (this, Maybe.Empty())
