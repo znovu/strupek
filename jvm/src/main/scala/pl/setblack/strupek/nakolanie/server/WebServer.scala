@@ -1,11 +1,14 @@
 package pl.setblack.strupek.nakolanie.server
 
+import java.nio.file.Paths
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import pl.setblack.strupek.nakolanie.scanner.CodeEndpoint
+import pl.setblack.strupek.nakolanie.scanner.ModulesService.FileBasedModulesService
 
 import scala.io.StdIn
 
@@ -16,7 +19,8 @@ object WebServer {
     implicit val materializer = ActorMaterializer()
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
-    val code = new CodeEndpoint(null)
+    val modules = new FileBasedModulesService(Paths.get("codes"))
+    val code = new CodeEndpoint(modules)
 
     val route =
       path("hello") {

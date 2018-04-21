@@ -9,14 +9,30 @@ object Code {
 
   case class FileContents(default: String, alternatives: Map[String, String])
 
-  private implicit def rwCompilationFile: RW[CompilationFile] = macroRW
 
-  implicit def rwProject: RW[Project] = macroRW
 
+  import upickle.default._
+  import JsonOps._
   val readProjectFromString = (str: String) => {
-    import upickle.default._
     read[Project](str)
   }
 
+  val readContentsFromString = (str: String) => {
+    read[CompilationFile](str)
+  }
+
+  def writeJson( prj : Project) : String = write(prj)
+
+  def writeJson( prjs : Seq[Project]) : String = write(prjs)
+
+  def writeJson( contents : FileContents ) : String = write(contents)
+
+  object JsonOps {
+    implicit def rwFileContents: RW[FileContents] = macroRW
+
+    implicit def rwCompilationFile: RW[CompilationFile] = macroRW
+
+    implicit def rwProject: RW[Project] = macroRW
+  }
 
 }
