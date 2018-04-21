@@ -17,48 +17,46 @@ class CodeEndpoint(private val modules: ModulesService) {
   def createRoute: Route =
     pathPrefix("code" / Segment) {
       moduleName =>
+        val module: \/[StandardRoute, CodeModule.CodeModule] = toStatus(modules.codeModule(moduleName)._2)
         pathPrefix(Segment) {
           projectName =>
             path(Segment) {
               fileName =>
-                getProject(moduleName , projectName, URLDecoder.decode(fileName, "UTF-8"))
-            } ~ getProject(moduleName, projectName)
-        } ~ getModule(moduleName)
+                getFileContents(module, projectName, URLDecoder.decode(fileName, "UTF-8"))
+            } ~ getProject(module, projectName)
+        } ~ getModule(module)
     }
 
-  private def getProject(moduleName: String, projectName: String, fileName : String) = {
-     get {
-       (for {module <- toStatus(modules.codeModule(moduleName)._2)
-             project = module.getProject(projectName)
-             contents <-toStatus(project.readFile(fileName))
-       } yield (complete(HttpEntity(ContentTypes.`application/json`, writeJson(contents))))) merge
-     }
-  }
-
-  private def getProject(moduleName: String, projectName: String) = {
+  private def getFileContents(moduleChance: \/[StandardRoute, CodeModule.CodeModule], projectName: String, fileName: String) =
     get {
-      (for {module <- toStatus(modules.codeModule(moduleName)._2)
+      (for {module <- moduleChance
+            project = module.getProject(projectName)
+            contents <- toStatus(project.readFile(fileName))
+      } yield (toResult(writeJson(contents)))) merge
+    }
+
+  private def getProject(moduleChance: \/[StandardRoute, CodeModule.CodeModule], projectName: String) =
+    get {
+      (for {module <- moduleChance
             project = module.getProject(projectName)
             struct <- toStatus(project.readStructure)
-      } yield (complete(HttpEntity(ContentTypes.`application/json`, writeJson(struct))))) merge
+      } yield (toResult(writeJson(struct)))) merge
     }
-  }
 
-  private def getModule(moduleName: String) = {
+  private def getModule(moduleChance: \/[StandardRoute, CodeModule.CodeModule]) =
     pathEndOrSingleSlash {
       get {
-        (for {module <- toStatus(modules.codeModule(moduleName)._2)
+        (for { module <- moduleChance
               projects <- toStatus(module.getProjects())
-        } yield (complete(HttpEntity(ContentTypes.`application/json`, write(projects.map(_.name)))))) merge
-
+        } yield (toResult(write(projects.map(_.name))))) merge
       }
     }
-  }
+
+  private def toResult(res: String) = complete(HttpEntity(ContentTypes.`application/json`, res))
 
   private def toStatus(m: Maybe[CodeModule.CodeModule]) =
     m.toRight(complete(HttpResponse(StatusCodes.NotFound, entity = "Not found")))
 
   private def toStatus[T](v: \/[ModuleError, T]) =
     v.leftMap(e => complete(HttpResponse(StatusCodes.NotFound, entity = e.desc)))
-
 }
