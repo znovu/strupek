@@ -1,8 +1,11 @@
 package pl.setblack.strupek.nakolanie.scanner
 
+import java.nio.file.Path
+
 import pl.setblack.strupek.nakolanie.code.Code._
 import pl.setblack.strupek.nakolanie.code.Errors
 import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
+import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
 object CodeProject {
@@ -24,6 +27,8 @@ object CodeProject {
                     .getOrElse(-\/(Errors.NoDefaultVersion(name, path)))
     )
 
+    def copyContentTo(path: Path) : Task[Unit] = ???
+
     private def readFileVersion(path: String, alternative: String) =
       module getContents s"${projectPrefix}/${alternative}/${path}"
 
@@ -38,7 +43,6 @@ object CodeProject {
     private val emptyIfMissing = (tup: (String, \/[_, String])) => (tup._1, tup._2.getOrElse(""))
 
     private val onlyExisting = (tup: (String, \/[_, String])) => tup._2.isRight
-
   }
 
 

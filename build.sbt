@@ -16,6 +16,7 @@ lazy val foo = crossProject.in(file(".")).
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "upickle" % "0.6.5",
       "org.scalaz" %% "scalaz-core" % "7.2.21",
+      "org.scalaz" %% "scalaz-concurrent" % "7.2.21",
       "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
 
     )
@@ -31,6 +32,7 @@ lazy val foo = crossProject.in(file(".")).
   ).
   jsSettings(
     // Add JS-specific settings here
+    scalaJSUseMainModuleInitializer := true
   )
 
 lazy val fooJVM = foo.jvm
