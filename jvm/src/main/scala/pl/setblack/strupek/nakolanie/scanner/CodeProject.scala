@@ -1,14 +1,15 @@
 package pl.setblack.strupek.nakolanie.scanner
 
-import java.nio.file.Path
+import java.nio.file.{Files, Path}
 
 import pl.setblack.strupek.nakolanie.code.Code._
 import pl.setblack.strupek.nakolanie.code.Errors
-import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
+import pl.setblack.strupek.nakolanie.scanner.CodeModule.{CodeModule, CopyChance}
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
 object CodeProject {
+
 
   class CodeProjectService(val name: String, module: CodeModule) {
 
@@ -23,11 +24,12 @@ object CodeProject {
     def readFile(path: String): \/[Errors.ModuleError, FileContents] =
       getAlternativeContents(path) flatMap (
         alt => alt.get(defaultVersion)
-                    .map{ defaultContent => \/-(FileContents(defaultContent, alt - defaultVersion))}
-                    .getOrElse(-\/(Errors.NoDefaultVersion(name, path)))
-    )
+          .map { defaultContent => \/-(FileContents(defaultContent, alt - defaultVersion)) }
+          .getOrElse(-\/(Errors.NoDefaultVersion(name, path)))
+        )
 
-    def copyContentTo(path: Path) : Task[Unit] = ???
+    def copyContentTo(destination: Path): Task[CopyChance] =
+        module.copy(s"${projectPrefix}/${defaultVersion}", destination)
 
     private def readFileVersion(path: String, alternative: String) =
       module getContents s"${projectPrefix}/${alternative}/${path}"
@@ -36,7 +38,7 @@ object CodeProject {
       module getFolders projectPrefix
 
     private def getAlternativeContents(path: String): \/[Errors.ModuleError, Map[String, String]] =
-      getAlternatives map (_.map ( alt => (alt, readFileVersion(path, alt)) )
+      getAlternatives map (_.map(alt => (alt, readFileVersion(path, alt)))
         .filter(onlyExisting)
         .map(emptyIfMissing) toMap)
 
@@ -45,5 +47,7 @@ object CodeProject {
     private val onlyExisting = (tup: (String, \/[_, String])) => tup._2.isRight
   }
 
-
 }
+
+
+

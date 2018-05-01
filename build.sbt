@@ -26,9 +26,14 @@ lazy val foo = crossProject.in(file(".")).
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"   % "10.1.1",
       "com.typesafe.akka" %% "akka-stream" % "2.5.12",
-      "com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % "test",
+      // https://mvnrepository.com/artifact/commons-io/commons-io
+      "commons-io" % "commons-io" % "2.6",
+
+
+"com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
-      "org.typelevel" %% "scalaz-scalatest" % "1.1.1" % "test")
+      "org.typelevel" %% "scalaz-scalatest" % "1.1.1" % "test",
+      "io.verizon.delorean" %% "core" % "1.2.42-scalaz-7.2" % "test")
   ).
   jsSettings(
     // Add JS-specific settings here
