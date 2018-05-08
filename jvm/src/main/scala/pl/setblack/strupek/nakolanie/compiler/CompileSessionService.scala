@@ -6,24 +6,12 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
 import scalaz.concurrent.Task
-/**
-  * All users sessions
-  */
-trait CompileSessionService {
-
-  def startSession( ) : Task[CompilationSession]
-
-}
 
 
-trait CompilationSession {
 
-    def prepare( module : String, project : String) : Task[CompilationWorker]
 
-    def close() : Task[CloseError]
-}
 
-case class SessionId( id : String)
+
 
 
 trait CompilationWorker  {
