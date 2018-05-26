@@ -30,7 +30,7 @@ class CodeEndpoint(private val modules: ModulesService) {
   private def getFileContents(moduleChance: \/[StandardRoute, CodeModule.CodeModule], projectName: String, fileName: String) =
     get {
       (for {module <- moduleChance
-            project = module.getProject(projectName)
+            project <- toStatus(module.getProject(projectName))
             contents <- toStatus(project.readFile(fileName))
       } yield toResult(writeJson(contents))) merge
     }
@@ -38,7 +38,7 @@ class CodeEndpoint(private val modules: ModulesService) {
   private def getProject(moduleChance: \/[StandardRoute, CodeModule.CodeModule], projectName: String) =
     get {
       (for {module <- moduleChance
-            project = module.getProject(projectName)
+            project <- toStatus(module.getProject(projectName))
             struct <- toStatus(project.readStructure)
       } yield toResult(writeJson(struct))) merge
     }

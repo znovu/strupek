@@ -19,7 +19,7 @@ object CodeModule {
   trait CodeModuleService {
     def getProjects(): ProjectsChance
 
-    def getProject(name: String): CodeProjectService
+    def getProject(name: String): \/[ModuleError, CodeProjectService]
 
     //todo split to External and Internal trait  - those below should not be exposed
     def getFolders(subPath: String): \/[ModuleError, Seq[String]]
@@ -41,7 +41,10 @@ object CodeModule {
     override def getProjects(): ProjectsChance =
       getFolders("projects").map(_.map(new Project(this, _)))
 
-    override def getProject(name: String): CodeProjectService = new CodeProjectService(name, this)
+    override def getProject(name: String): \/[ModuleError, CodeProjectService] = {
+      val project = new CodeProjectService(name, this)
+      project.readStructure.map( _ => project)
+    }
 
     override def getContents(subPath: String): \/[ModuleError, String] = {
       val file = path.resolve(subPath)

@@ -2,6 +2,7 @@ package pl.setblack.strupek.nakolanie.compiler.session
 
 import pl.setblack.strupek.nakolanie.compiler.CompilationWorker
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
+import pl.setblack.strupek.nakolanie.scanner.ProjectProvider
 import scalaz.concurrent.Task
 
 
@@ -15,10 +16,11 @@ object CompilationSession {
         def close() : Task[CloseError]
     }
 
-    class Implementation(override val id : SessionId) extends  Interface {
+    class Implementation(override val id : SessionId)(implicit projectProvider: ProjectProvider) extends  Interface {
 
         override def prepare(module: String, project: String): Task[CompilationWorker] = ???
 
         override def close(): Task[CloseError] = ???
     }
 }
+

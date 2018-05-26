@@ -10,10 +10,6 @@ import scalaz.concurrent.Task
 
 
 
-
-
-
-
 trait CompilationWorker  {
   type CompilationStream  = Source[CompilationResult, NotUsed]
 

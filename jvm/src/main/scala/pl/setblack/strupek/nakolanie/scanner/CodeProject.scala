@@ -10,14 +10,17 @@ import scalaz.{-\/, \/, \/-}
 
 object CodeProject {
 
+  trait Interface {
+    def readStructure: \/[Errors.ModuleError, Project]
+  }
 
-  class CodeProjectService(val name: String, module: CodeModule) {
+  class CodeProjectService(val name: String, module: CodeModule) extends Interface {
 
     private val projectPrefix = s"projects/${name}/"
 
     private val defaultVersion = "default"
 
-    def readStructure: \/[Errors.ModuleError, Project] =
+    override def readStructure: \/[Errors.ModuleError, Project] =
       module getContents s"${projectPrefix}/${name}.json" map readProjectFromString
 
 
