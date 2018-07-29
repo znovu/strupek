@@ -6,6 +6,7 @@ import pl.setblack.strupek.nakolanie.compiler.session.CompilationSystem.Compilat
 class CompilationSystemTest extends AsyncFunSpec with Matchers {
 
   import delorean._
+  implicit val projectProvider = new DummyProjectProvider()
 
   describe("compilation system") {
     val sys = new CompilationSessionSystem()

@@ -5,13 +5,17 @@ import java.nio.file.Path
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
+import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
 import scalaz.concurrent.Task
 
 
+object CompileSession {
+  type CompilationStream  = Source[CompilationResult, NotUsed]
+}
 
 
 trait CompilationWorker  {
-  type CompilationStream  = Source[CompilationResult, NotUsed]
+
 
   def putFile( name : String, content : String) : CompilationStream
 
@@ -27,7 +31,6 @@ object  CompileService {
 
 }
 
-
 case class CompilationType(name : String)
 
 trait SourcesProvider {
@@ -37,13 +40,16 @@ trait SourcesProvider {
   case class CopyStats( copiedFiles : Int);
 }
 
+
 sealed trait CompilationResult {
 
 
-    case object Started extends CompilationResult
+}
 
-    case class OutputLine( output : String,  error  :String) extends CompilationResult
+object  CompilationResult {
+  case object Started extends CompilationResult
 
-    case object Finished
+  case class OutputLine( output : String = "",  error  :String = "") extends CompilationResult
 
+  case object Finished
 }

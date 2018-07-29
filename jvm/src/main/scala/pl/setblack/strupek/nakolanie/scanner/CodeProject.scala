@@ -12,6 +12,8 @@ object CodeProject {
 
   trait Interface {
     def readStructure: \/[Errors.ModuleError, Project]
+
+    def readFile(path: String): \/[Errors.ModuleError, FileContents]
   }
 
   class CodeProjectService(val name: String, module: CodeModule) extends Interface {
@@ -24,7 +26,7 @@ object CodeProject {
       module getContents s"${projectPrefix}/${name}.json" map readProjectFromString
 
 
-    def readFile(path: String): \/[Errors.ModuleError, FileContents] =
+    override def readFile(path: String): \/[Errors.ModuleError, FileContents] =
       getAlternativeContents(path) flatMap (
         alt => alt.get(defaultVersion)
           .map { defaultContent => \/-(FileContents(defaultContent, alt - defaultVersion)) }
