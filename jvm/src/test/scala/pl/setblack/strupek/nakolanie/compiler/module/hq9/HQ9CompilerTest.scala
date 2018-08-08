@@ -31,12 +31,11 @@ class HQ9CompilerTest extends AsyncFunSpec with Matchers {
 
     it ( "should printe hello world") {
       val compilation = compiler.compile(prj1)
+      println("ooo")
       val result = compilation.runWith( Sink.seq[CompilationResult])
+      println("ooo1")
       result  map( _.seq.filter{_.isInstanceOf[OutputLine]}.head should  be (OutputLine("Hello, world!")) )
-
-
     }
-
   }
 
 }

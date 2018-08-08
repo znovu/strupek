@@ -1,31 +1,38 @@
 package pl.setblack.strupek.nakolanie.compiler.module.hq9
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer, OverflowStrategy}
 import akka.stream.scaladsl.{Source, SourceQueueWithComplete}
+import akka.stream.{Materializer, OverflowStrategy}
 import pl.setblack.strupek.nakolanie.code.{Code, Errors}
-import pl.setblack.strupek.nakolanie.compiler.{CompilationResult, CompilationWorker, CompileService}
-import pl.setblack.strupek.nakolanie.compiler.CompilationResult.Started
-import pl.setblack.strupek.nakolanie.scanner.CodeProject
-import scalaz.concurrent.Task
+import pl.setblack.strupek.nakolanie.compiler.CompilationResult.{OutputLine, Started}
 import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
+import pl.setblack.strupek.nakolanie.compiler.{CompilationResult, CompilationWorker, CompileService}
+import pl.setblack.strupek.nakolanie.scanner.CodeProject
 import scalaz.\/
+import scalaz.concurrent.Task
+
+import scala.concurrent.ExecutionContext
 
 
-class HQ9Compiler(implicit val materializer : Materializer) {
+class HQ9Compiler(implicit val materializer : Materializer, implicit val executionContext : ExecutionContext) {
   val interpreter = new HQ9Interpreter()
 
   def compileSingle(content: Errors.ModuleError \/ Code.FileContents, queue: SourceQueueWithComplete[CompilationResult])  =  {
     queue.offer(Started )
 
     content.foreach( fileContent => {
+      println(s"dping ${fileContent}")
       val result  = interpreter.interpret(fileContent.default)
-      result.runForeach( queue.offer(_))
+      result.runForeach { x =>
+        println(x)
+        queue.offer(x)
+      }.andThen{  case _ => queue.complete()}
+      println("iki!")
     })
+    println("done")
   }
 
   def compile(project: CodeProject.Interface): CompilationStream = {
-    val resultStream = Source.queue[CompilationResult](10, OverflowStrategy.backpressure)
+    val resultStream = Source.queue[CompilationResult](10, OverflowStrategy.dropTail)
     val prematerialized = resultStream.preMaterialize()
     val struct = project.readStructure
     struct.map {
@@ -35,7 +42,8 @@ class HQ9Compiler(implicit val materializer : Materializer) {
         compileSingle(_, prematerialized._1)
       }
     }
-    prematerialized._1.complete()
+    //prematerialized._1.complete()
+    println("complete")
     prematerialized._2
   }
 
