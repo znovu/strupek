@@ -13,10 +13,15 @@ import scalaz.\/
 
 
 class HQ9Compiler(implicit val materializer : Materializer) {
+  val interpreter = new HQ9Interpreter()
 
-
-  def compileSingle(value: Errors.ModuleError \/ Code.FileContents, queue: SourceQueueWithComplete[CompilationResult])  =  {
+  def compileSingle(content: Errors.ModuleError \/ Code.FileContents, queue: SourceQueueWithComplete[CompilationResult])  =  {
     queue.offer(Started )
+
+    content.foreach( fileContent => {
+      val result  = interpreter.interpret(fileContent.default)
+      result.runForeach( queue.offer(_))
+    })
   }
 
   def compile(project: CodeProject.Interface): CompilationStream = {

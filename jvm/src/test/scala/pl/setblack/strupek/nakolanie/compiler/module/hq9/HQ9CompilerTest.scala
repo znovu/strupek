@@ -21,16 +21,21 @@ class HQ9CompilerTest extends AsyncFunSpec with Matchers {
     val prj1 = codeModule.getProject("prj1").value
 
     //val pr1struct = prj1.flatMap { _.readStructure}
-    it ( "works on  hq9+ compilation") {
+    it ( "should start  hq9+ compilation") {
       val compilation = compiler.compile(prj1)
-      val resultSeq = Sink.seq[CompilationResult]
-      val result = compilation.runWith(resultSeq)
-      val value  = result.value
-      //result map( it => it.seq.head should  be (OutputLine("Hello, world!")) )
-      result map( it => it.seq.head should  be (Started) )
+      val result = compilation.runWith( Sink.seq[CompilationResult])
+
+      result map( _.seq.head should  be (Started) )
 
     }
 
+    it ( "should printe hello world") {
+      val compilation = compiler.compile(prj1)
+      val result = compilation.runWith( Sink.seq[CompilationResult])
+      result  map( _.seq.filter{_.isInstanceOf[OutputLine]}.head should  be (OutputLine("Hello, world!")) )
+
+
+    }
 
   }
 

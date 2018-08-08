@@ -9,8 +9,6 @@ object Code {
 
   case class FileContents(default: String, alternatives: Map[String, String])
 
-
-
   import upickle.default._
   import JsonOps._
   val readProjectFromString = (str: String) => {
