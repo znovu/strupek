@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
+import pl.setblack.strupek.nakolanie.compiler.CompilationMode.CompilationMode
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
 import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
 import scalaz.concurrent.Task
@@ -18,7 +19,7 @@ trait CompilationWorker  {
 
   def putFile( name : String, content : String) : CompilationStream
 
-  def compile() : CompilationStream
+  def compile(mode : CompilationMode) : CompilationStream
 
   def close() : Task[CloseError]
 }
@@ -50,9 +51,16 @@ object  CompilationResult {
 
   case class OutputLine( output : String = "") extends CompilationResult
 
+  case class CompilerLine(output: String = "") extends CompilationResult
+
   case class ErrorLine( output : String = "") extends CompilationResult
 
   case class WarnLine( output : String = "") extends CompilationResult
 
   case object Finished
+}
+
+object CompilationMode {
+  sealed trait CompilationMode
+  case class Run(args: String) extends  CompilationMode
 }

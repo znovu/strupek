@@ -33,7 +33,7 @@ lazy val foo = crossProject.in(file(".")).
 "com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
       "org.typelevel" %% "scalaz-scalatest" % "1.1.1" % "test",
-      "io.verizon.delorean" %% "core" % "1.2.42-scalaz-7.2" % "test")
+      "io.verizon.delorean" %% "core" % "1.2.42-scalaz-7.2" )
   ).
   jsSettings(
     // Add JS-specific settings here

@@ -10,13 +10,13 @@ import scalaz.{-\/, \/, \/-}
 
 object CodeProject {
 
-  trait Interface {
+  trait Service {
     def readStructure: \/[Errors.ModuleError, Project]
 
     def readFile(path: String): \/[Errors.ModuleError, FileContents]
   }
 
-  class CodeProjectService(val name: String, module: CodeModule) extends Interface {
+  class CodeProjectService(val name: String, module: CodeModule) extends Service {
 
     private val projectPrefix = s"projects/${name}/"
 

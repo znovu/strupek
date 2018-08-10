@@ -18,7 +18,10 @@ object CompilationSession {
 
     class Implementation(override val id : SessionId)(implicit projectProvider: ProjectProvider) extends  Interface {
 
-        override def prepare(module: String, project: String): Task[CompilationWorker] = ???
+        override def prepare(module: String, project: String): Task[CompilationWorker] = {
+            val struct = projectProvider.readProject(module, project)
+           ???
+        }
 
         override def close(): Task[CloseError] = ???
     }

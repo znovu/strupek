@@ -23,5 +23,5 @@ class CompilationSessionTest extends AsyncFunSpec with Matchers {
 }
 
 class DummyProjectProvider extends ProjectProvider {
-  override def readProject(module: String, project: String): Errors.ModuleError \/ CodeProject.Interface = ???
+  override def readProject(module: String, project: String): Errors.ModuleError \/ CodeProject.Service = ???
 }
