@@ -8,12 +8,14 @@ import org.typelevel.scalatest.DisjunctionValues._
 import pl.setblack.strupek.nakolanie.TestResources
 import pl.setblack.strupek.nakolanie.compiler.CompilationResult
 import pl.setblack.strupek.nakolanie.compiler.CompilationResult.{OutputLine, Started}
-import pl.setblack.strupek.nakolanie.compiler.module.InMemCode
+import pl.setblack.strupek.nakolanie.compiler.inmem.InMemCode
 import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
+import pl.setblack.strupek.nakolanie.context.JVMContext
 
-class HQ9CompilerTest extends AsyncFunSpec with Matchers {
-  implicit val system = ActorSystem("compiler")
-  implicit val materializer = ActorMaterializer()
+class HQ9InMemCompilerTest extends AsyncFunSpec with Matchers {
+  implicit val ctx = JVMContext
+  implicit val mat  = ctx.materializer
+
   describe( "hq9 compiler" ) {
     val compiler = new HQ9Compiler()
     val folder = TestResources.hq9sample

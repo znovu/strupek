@@ -3,21 +3,21 @@ package pl.setblack.strupek.nakolanie.compiler.module.hq9
 import akka.Done
 import akka.stream.scaladsl.{Source, SourceQueueWithComplete}
 import akka.stream.{Materializer, OverflowStrategy}
-import pl.setblack.strupek.nakolanie.code.{Code, Errors}
-import pl.setblack.strupek.nakolanie.compiler.CompilationResult.{OutputLine, Started}
+import pl.setblack.strupek.nakolanie.compiler.CompilationResult
+import pl.setblack.strupek.nakolanie.compiler.CompilationResult.Started
 import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
-import pl.setblack.strupek.nakolanie.compiler.module.InMemCode
-import pl.setblack.strupek.nakolanie.compiler.{CompilationMode, CompilationResult, CompilationWorker, CompileService}
-import pl.setblack.strupek.nakolanie.scanner.CodeProject
-import scalaz.\/
+import pl.setblack.strupek.nakolanie.compiler.inmem.{InMemCode, InMemCompiler}
+import pl.setblack.strupek.nakolanie.context.Context
 import scalaz.concurrent.Task
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-
-class HQ9Compiler(implicit val materializer: Materializer, implicit val executionContext: ExecutionContext) {
+//(implicit val materializer: Materializer, implicit val executionContext: ExecutionContext)
+class HQ9Compiler(implicit val ctx: Context) extends InMemCompiler{
   import delorean._
   import scalaz.concurrent.Strategy.DefaultStrategy
+  implicit val materializer  = ctx.materializer
+  implicit val ec  = ctx.executionContext
   val interpreter = new HQ9Interpreter()
 
   def compileSingle(content: String, queue: SourceQueueWithComplete[CompilationResult]) : Task[Done] = {
@@ -44,11 +44,3 @@ class HQ9Compiler(implicit val materializer: Materializer, implicit val executio
 }
 
 
-class HQ9Worker extends CompilationWorker {
-  override def putFile(name: String, content: String): CompilationStream = ???
-
-
-  override def compile(mode: CompilationMode.CompilationMode): CompilationStream = ???
-
-  override def close(): Task[CompileService.CloseError] = ???
-}

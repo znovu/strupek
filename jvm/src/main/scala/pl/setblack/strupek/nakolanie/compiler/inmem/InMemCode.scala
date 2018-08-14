@@ -1,4 +1,4 @@
-package pl.setblack.strupek.nakolanie.compiler.module
+package pl.setblack.strupek.nakolanie.compiler.inmem
 
 import pl.setblack.strupek.nakolanie.code.Errors
 import pl.setblack.strupek.nakolanie.scanner.CodeProject

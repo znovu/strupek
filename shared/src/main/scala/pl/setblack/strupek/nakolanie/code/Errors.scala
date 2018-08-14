@@ -19,4 +19,8 @@ object Errors {
     override def desc: String = s"Default file content ${file} of project ${prj}is missing"
   }
 
+  final case class UnknownCompilationType( val compilation : String ) extends  ModuleError {
+    override def desc: String = s"Unknown compilation type ${compilation}"
+  }
+
 }

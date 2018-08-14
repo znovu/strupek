@@ -19,7 +19,7 @@ trait CompilationWorker  {
 
   def putFile( name : String, content : String) : CompilationStream
 
-  def compile(mode : CompilationMode) : CompilationStream
+  def compile(mode : CompilationMode= CompilationMode.Run()) : CompilationStream
 
   def close() : Task[CloseError]
 }
@@ -62,5 +62,5 @@ object  CompilationResult {
 
 object CompilationMode {
   sealed trait CompilationMode
-  case class Run(args: String) extends  CompilationMode
+  case class Run(args: String = "") extends  CompilationMode
 }

@@ -1,29 +1,49 @@
 package pl.setblack.strupek.nakolanie.compiler.session
 
+import pl.setblack.strupek.nakolanie.code.Errors
+import pl.setblack.strupek.nakolanie.code.Errors.ModuleError
 import pl.setblack.strupek.nakolanie.compiler.CompilationWorker
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
+import pl.setblack.strupek.nakolanie.compiler.inmem.InMemCode
+import pl.setblack.strupek.nakolanie.compiler.module.hq9.HQ9Compiler
+import pl.setblack.strupek.nakolanie.compiler.session.workers.InMemWorker
+import pl.setblack.strupek.nakolanie.context.Context
 import pl.setblack.strupek.nakolanie.scanner.ProjectProvider
 import scalaz.concurrent.Task
+import scalaz.{-\/, \/}
 
 
 object CompilationSession {
-    trait Interface {
 
-        def id : SessionId
+  trait Interface {
 
-        def prepare( module : String, project : String) : Task[CompilationWorker]
+    def id: SessionId
 
-        def close() : Task[CloseError]
-    }
+    def prepare(module: String, project: String):  Task[ModuleError \/ CompilationWorker]
 
-    class Implementation(override val id : SessionId)(implicit projectProvider: ProjectProvider) extends  Interface {
+    def close(): Task[CloseError]
+  }
 
-        override def prepare(module: String, project: String): Task[CompilationWorker] = {
-            val struct = projectProvider.readProject(module, project)
-           ???
+  class InMemCompilationSession(override val id: SessionId)(implicit projectProvider: ProjectProvider, implicit val ctx : Context) extends Interface {
+
+    override def prepare(module: String, project: String): Task[ModuleError \/ CompilationWorker] = {
+      val projectData = projectProvider.readProject(module, project)
+      val compilation: ModuleError \/ CompilationWorker = projectData.flatMap { prjService =>
+        val projectStruct = prjService.readStructure
+        projectStruct.flatMap { prj =>
+            if ( prj.compilationType == "hq9+" ) {
+               InMemCode.fromProject(prjService).map ( new InMemWorker(_, new HQ9Compiler()))
+            } else {
+                -\/(Errors.UnknownCompilationType(prj.compilationType)) //untested
+            }
         }
 
-        override def close(): Task[CloseError] = ???
+      }
+      Task.point(  compilation)
     }
+
+    override def close(): Task[CloseError] = ???
+  }
+
 }
 
