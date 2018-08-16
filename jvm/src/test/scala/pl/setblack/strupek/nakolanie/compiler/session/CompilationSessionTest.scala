@@ -52,6 +52,20 @@ class CompilationSessionTest extends AsyncFunSpec with Matchers {
           result.map( _.filter( _.isInstanceOf[CompilationResult.OutputLine] ).head should be (CompilationResult.OutputLine("Hello, world!")))
       }
     }
+    it("shall  compile  new version of project") {
+      val futureStream: Future[CompilationStream] = worker.
+        map { w =>
+          w.value.putFile("src/f1.hq9","q")
+          w.value.compile()
+        }
+        . unsafeToFuture
+
+      futureStream.flatMap {
+        stream: CompilationStream =>
+          val result: Future[immutable.Seq[CompilationResult]] =  stream.runWith(Sink.seq[CompilationResult])
+          result.map( _.filter( _.isInstanceOf[CompilationResult.OutputLine] ).head should be (CompilationResult.OutputLine("q")))
+      }
+    }
 
   }
     /*
