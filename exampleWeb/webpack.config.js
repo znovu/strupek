@@ -5,8 +5,6 @@ let webpack = require('webpack');
 const devMode = process.env.NODE_ENV !== 'production'
 var basePath = __dirname;
 const miniCssLoader = new MiniCssExtractPlugin({
-    // Options similar to the same options in webpackOptions.output
-    // both options are optional
     filename: devMode ? '[name].css' : '[name].[hash].css',
     chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
 });
@@ -19,9 +17,9 @@ module.exports = {
     entry: {
         app: './index.tsx',
         //mainStyle : './less/main.less'
-        styles: [
+        styles:
             './less/main.less'
-        ]
+
     },
     output: {
         path: path.join(basePath, 'dist'),
@@ -42,8 +40,8 @@ module.exports = {
                 test: /\.less$/,
                 use: [
                     devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'less-loader',
+                    {loader: 'css-loader', options : {sourceMap: true}},
+                    {loader: 'less-loader', options : {sourceMap: true}},
                 ],
 
             },
