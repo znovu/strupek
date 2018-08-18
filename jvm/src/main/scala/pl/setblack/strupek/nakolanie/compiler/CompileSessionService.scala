@@ -51,6 +51,8 @@ object  CompilationResult {
 
   case class OutputLine( output : String = "") extends CompilationResult
 
+  case object ProgramEnd extends CompilationResult
+
   case class CompilerLine(output: String = "") extends CompilationResult
 
   case class ErrorLine( output : String = "") extends CompilationResult

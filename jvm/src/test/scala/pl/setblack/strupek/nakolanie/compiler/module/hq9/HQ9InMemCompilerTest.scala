@@ -1,7 +1,5 @@
 package pl.setblack.strupek.nakolanie.compiler.module.hq9
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Sink
 import org.scalatest.{AsyncFunSpec, Matchers}
 import org.typelevel.scalatest.DisjunctionValues._
@@ -9,8 +7,8 @@ import pl.setblack.strupek.nakolanie.TestResources
 import pl.setblack.strupek.nakolanie.compiler.CompilationResult
 import pl.setblack.strupek.nakolanie.compiler.CompilationResult.{OutputLine, Started}
 import pl.setblack.strupek.nakolanie.compiler.inmem.InMemCode
-import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
 import pl.setblack.strupek.nakolanie.context.JVMContext
+import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
 
 class HQ9InMemCompilerTest extends AsyncFunSpec with Matchers {
   implicit val ctx = JVMContext

@@ -16,9 +16,10 @@ import pl.setblack.strupek.nakolanie.scanner.CodeModule.CodeModule
 import pl.setblack.strupek.nakolanie.scanner.{CodeProject, ProjectProvider}
 import scalaz.{-\/, \/}
 import org.typelevel.scalatest.DisjunctionValues._
-import pl.setblack.strupek.nakolanie.compiler.CompilationResult
+import pl.setblack.strupek.nakolanie.compiler.{CompilationResult, CompilationWorker}
 import akka.pattern.pipe
 import pl.setblack.strupek.nakolanie.context.JVMContext
+import scalaz.concurrent.Task
 
 import scala.collection.immutable
 import scala.concurrent.Future
@@ -53,17 +54,21 @@ class CompilationSessionTest extends AsyncFunSpec with Matchers {
       }
     }
     it("shall  compile  new version of project") {
-      val futureStream: Future[CompilationStream] = worker.
-        map { w =>
-          w.value.putFile("src/f1.hq9","q")
-          w.value.compile()
-        }
-        . unsafeToFuture
+      val futureStream: Future[CompilationStream] = putSampleCodeAndCompile(worker)
 
       futureStream.flatMap {
         stream: CompilationStream =>
           val result: Future[immutable.Seq[CompilationResult]] =  stream.runWith(Sink.seq[CompilationResult])
           result.map( _.filter( _.isInstanceOf[CompilationResult.OutputLine] ).head should be (CompilationResult.OutputLine("q")))
+      }
+    }
+    it("shall get end of program signal") {
+      val futureStream: Future[CompilationStream] = putSampleCodeAndCompile(worker)
+
+      futureStream.flatMap {
+        stream: CompilationStream =>
+          val result: Future[immutable.Seq[CompilationResult]] =  stream.runWith(Sink.seq[CompilationResult])
+          result.map( _.filter( _ == CompilationResult.ProgramEnd ).headOption should === (Some(CompilationResult.ProgramEnd)))
       }
     }
 
@@ -72,6 +77,15 @@ class CompilationSessionTest extends AsyncFunSpec with Matchers {
   class HappyProvider extends ProjectProvider {
     override def readProject(module: String, project: String): Errors.ModuleError \/ CodeProject.CodeProjectService = \/-()
   }*/
+  private def putSampleCodeAndCompile(worker: Task[ModuleError \/ CompilationWorker]) = {
+    val futureStream: Future[CompilationStream] = worker.
+      map { w =>
+        w.value.putFile("src/f1.hq9", "q")
+        w.value.compile()
+      }
+      .unsafeToFuture
+    futureStream
+  }
 }
 
 class SimpleProjectProvider(val startPath: Path) extends ProjectProvider {

@@ -36,7 +36,10 @@ class HQ9Compiler(implicit val ctx: Context) extends InMemCompiler{
 
       compileSingle(aFile.code, queue)
     }.foldLeft( Task.now(akka.Done).asInstanceOf[Task[Done]])((a:Task[Done],b:Task[Done]) => a.flatMap( _ => b))
-        .map { _=> queue.complete()}.unsafePerformAsync {_ =>}
+        .map { _=>
+          queue.offer(CompilationResult.ProgramEnd)
+          queue.complete()
+        }.unsafePerformAsync {_ =>}
 
     prematerialized._2
   }

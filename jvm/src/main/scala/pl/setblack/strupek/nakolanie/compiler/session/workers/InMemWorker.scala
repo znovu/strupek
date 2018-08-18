@@ -17,8 +17,8 @@ class InMemWorker(code: InMemCode, private val compiler :  InMemCompiler) extend
       Source.empty
   }
 
-
   override def compile(mode: CompilationMode.CompilationMode): CompilationStream = compiler.compile(codeRef.get())
 
   override def close(): Task[CompileService.CloseError] = ???
+
 }
