@@ -1,10 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import '../external/sample.js';
 
-
-import { SimpleCoder } from './simple-coder';
+import { Codv } from './codv';
 
 ReactDOM.render(
-  <SimpleCoder/>,
-  document.getElementById('simpleCoder')
+  <Codv/>,
+  document.getElementById('codv')
 );

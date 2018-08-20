@@ -1,16 +1,14 @@
 package pl.setblack.strupek.nakolanie.compiler.module.hq9
 
 import akka.Done
+import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.{Source, SourceQueueWithComplete}
-import akka.stream.{Materializer, OverflowStrategy}
 import pl.setblack.strupek.nakolanie.compiler.CompilationResult
 import pl.setblack.strupek.nakolanie.compiler.CompilationResult.Started
 import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
 import pl.setblack.strupek.nakolanie.compiler.inmem.{InMemCode, InMemCompiler}
 import pl.setblack.strupek.nakolanie.context.Context
 import scalaz.concurrent.Task
-
-import scala.concurrent.ExecutionContext
 
 //(implicit val materializer: Materializer, implicit val executionContext: ExecutionContext)
 class HQ9Compiler(implicit val ctx: Context) extends InMemCompiler{
