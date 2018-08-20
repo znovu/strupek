@@ -1,7 +1,7 @@
 
 export class CodeState {
  private sessionId:  string = null;
-
+  me = "codeState";
 
 
 

@@ -15,15 +15,14 @@ export class Codv extends React.Component<Props, CodeCtrl> {
   }
 
 
-
   public componentDidMount() {
 
   }
 
   update(newState : CodeCtrl) {
-    console.log('setting state:'+ this.state);
+    console.log('setting state:'+ JSON.stringify(newState));
 
-    this.setState(this.state);
+    this.setState(newState);
   }
 
   public render() {

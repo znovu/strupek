@@ -2,6 +2,7 @@ import {CodeState} from './codeState';
 
 export class CodeCtrl {
   state : CodeState = new CodeState();
+  me = "codeCtrl";
   private update: (st: CodeCtrl) => void;
 
   constructor (upd: (code: CodeCtrl) => void) {
@@ -13,8 +14,8 @@ export class CodeCtrl {
   }
 
   login() {
-     console.log('uuu');
-      let newState = this.state.setSession("aaaalla");
+      console.log('uuu');
+      let newState = this.state.setSession("a!" + this.getState().getSessionId());
       this.setState(newState);
       this.update(this);
   }

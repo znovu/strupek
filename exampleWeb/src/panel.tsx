@@ -8,9 +8,13 @@ interface PanelProps {
 
 export class CodvPanel extends React.Component<PanelProps, CodeState> {
 
+   controller : CodeCtrl;
+
   constructor(props) {
     super(props);
     this.state = props.ctrl.state;
+    this.controller = props.ctrl;
+    console.log('props os'+ JSON.stringify(props))
   }
 
   public componentDidMount() {
@@ -19,7 +23,7 @@ export class CodvPanel extends React.Component<PanelProps, CodeState> {
 
   login() {
     console.log('login');
-    this.props.ctrl.login();
+    this.controller.login();
   }
 
   public render() {
