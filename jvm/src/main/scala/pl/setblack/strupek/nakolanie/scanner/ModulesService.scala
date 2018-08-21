@@ -9,19 +9,19 @@ import scalaz.Maybe
 
 object ModulesService {
 
-  type InputChance = (ModulesService, Maybe[CodeModule])
+  type InputChance = Maybe[CodeModule]
 
   trait ModulesService {
     def codeModule(name: String): InputChance
   }
 
   class FileBasedModulesService(private val base: Path) extends ModulesService {
-    override def codeModule(name: String): (ModulesService, Maybe[CodeModule]) = {
+    override def codeModule(name: String): InputChance = {
       val modulePath = base.resolve(name)
       if (isBadName(name) ||  !Files.isDirectory(modulePath)) {
-        (this, Maybe.Empty())
+        Maybe.Empty()
       } else {
-        (this, Maybe.Just(new scanner.CodeModule.CodeModule(modulePath)))
+        Maybe.Just(new scanner.CodeModule.CodeModule(modulePath))
       }
     }
 

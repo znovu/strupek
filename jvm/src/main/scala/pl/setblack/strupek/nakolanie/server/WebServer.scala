@@ -6,8 +6,11 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
-import pl.setblack.strupek.nakolanie.scanner.CodeEndpoint
+import pl.setblack.strupek.nakolanie.compiler.session.CompilationSystem.CompilationSessionSystem
+import pl.setblack.strupek.nakolanie.context.JVMContext
+import pl.setblack.strupek.nakolanie.scanner.{CodeEndpoint, ModuleBasedProjectProvider}
 import pl.setblack.strupek.nakolanie.scanner.ModulesService.FileBasedModulesService
 
 import scala.io.StdIn
@@ -21,15 +24,20 @@ object WebServer {
     implicit val executionContext = system.dispatcher
     val modules = new FileBasedModulesService(Paths.get("codes"))
     val code = new CodeEndpoint(modules)
+    implicit val projectProvider = new ModuleBasedProjectProvider(modules)
+    implicit val ctx = JVMContext
+    val compilationSystem = new CompilationSessionSystem()
+    val sessionsEndpoint = new SessionsEndpoint(compilationSystem)
 
-    val route =
+    val route: Route =
       path("hello") {
         get {
           complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
         }
-      } ~ code.createRoute
+      } ~ code.createRoute ~ sessionsEndpoint.createRoute()
 
-    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+
+    val bindingFuture = Http().bindAndHandle(route, "localhost", 8001)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return

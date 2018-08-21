@@ -2,8 +2,6 @@ package pl.setblack.strupek.nakolanie.compiler.session
 
 import java.util.UUID
 
-import pl.setblack.strupek.nakolanie.compiler
-import pl.setblack.strupek.nakolanie.compiler.session
 import pl.setblack.strupek.nakolanie.context.Context
 import pl.setblack.strupek.nakolanie.scanner.ProjectProvider
 import scalaz.concurrent.Task
@@ -34,7 +32,6 @@ object CompilationSystem {
 
     override def startSession(): Task[NewSession] =
       Task.point {
-
         val newSession = new CompilationSession.InMemCompilationSession(SessionId(UUID.randomUUID().toString))
         NewSession(new CompilationSessionSystem(this.sessions + (newSession.id, newSession)), newSession)
       }

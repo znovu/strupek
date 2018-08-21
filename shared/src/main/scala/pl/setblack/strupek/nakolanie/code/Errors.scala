@@ -7,6 +7,10 @@ object Errors {
     def desc : String
   }
 
+  final case class MissingModule( val name :String) extends ModuleError {
+    override def desc: String = s"Module ${name} is missing"
+  }
+
   final case class MissingFolder( val path :Path) extends ModuleError {
     override def desc: String = s"Path ${path} is missing"
   }

@@ -14,11 +14,11 @@ class ModulesServiceTest extends FunSpec with Matchers with PropertyChecks{
     val path = TestResources.modules
     val inputService = new FileBasedModulesService(path)
     it("should return emtpy for non existing path") {
-      inputService.codeModule("some non existin path")._2 should be(Empty[CodeModule]())
+      inputService.codeModule("some non existin path") should be(Empty[CodeModule]())
     }
 
     it("should return module for simple path") {
-      inputService.codeModule("test2")._2.toOption should be (defined)
+      inputService.codeModule("test2").toOption should be (defined)
     }
 
     it("should return empty for path with any non alphanum chars") {
@@ -31,14 +31,14 @@ class ModulesServiceTest extends FunSpec with Matchers with PropertyChecks{
         PropertyCheckConfiguration( minSuccessful = 100)
       forAll (randomStr) {
         (name : String) =>
-          val module = inputService.codeModule(name)._2
+          val module = inputService.codeModule(name)
           if ( name.matches(""".*[\.\$\%\'\"\#\@\;\:\\\/]+.*""") ) {
             module should be (Empty())
           }
       }
     }
     it ("should return empty for path traversing" ) {
-      inputService.codeModule("../")._2 should be(Empty[CodeModule]())
+      inputService.codeModule("../") should be(Empty[CodeModule]())
     }
   }
 }

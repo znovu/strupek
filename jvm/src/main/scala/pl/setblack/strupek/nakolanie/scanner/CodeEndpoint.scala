@@ -17,7 +17,7 @@ class CodeEndpoint(private val modules: ModulesService) {
   def createRoute: Route =
     pathPrefix("code" / Segment) {
       moduleName =>
-        val module: \/[StandardRoute, CodeModule.CodeModule] = toStatus(modules.codeModule(moduleName)._2)
+        val module: \/[StandardRoute, CodeModule.CodeModule] = toStatus(modules.codeModule(moduleName))
         pathPrefix(Segment) {
           projectName =>
             path(Segment) {

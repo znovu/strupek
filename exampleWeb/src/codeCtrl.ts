@@ -14,10 +14,11 @@ export class CodeCtrl {
   }
 
   login() {
-      console.log('uuu');
-      let newState = this.state.setSession("a!" + this.getState().getSessionId());
-      this.setState(newState);
-      this.update(this);
+      setTimeout( () => {
+        let newState = this.state.setSession("a!" + this.getState().getSessionId());
+        this.setState(newState);
+        this.update(this);
+      }, 2000);
   }
 
   getState() : CodeState {
