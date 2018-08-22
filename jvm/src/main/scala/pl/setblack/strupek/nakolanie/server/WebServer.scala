@@ -9,6 +9,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import pl.setblack.strupek.nakolanie.compiler.session.CompilationSystem.CompilationSessionSystem
+import pl.setblack.strupek.nakolanie.compiler.session.SessionsEndpoint
 import pl.setblack.strupek.nakolanie.context.JVMContext
 import pl.setblack.strupek.nakolanie.scanner.{CodeEndpoint, ModuleBasedProjectProvider}
 import pl.setblack.strupek.nakolanie.scanner.ModulesService.FileBasedModulesService
@@ -36,10 +37,9 @@ object WebServer {
         }
       } ~ code.createRoute ~ sessionsEndpoint.createRoute()
 
-
     val bindingFuture = Http().bindAndHandle(route, "localhost", 8001)
 
-    println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
+    println(s"Server online at http://localhost:8001/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port

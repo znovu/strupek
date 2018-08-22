@@ -20,7 +20,7 @@ class CompilationSystemTest extends AsyncFunSpec with Matchers {
     it("shall create 2 different sessions") {
       sys.startSession()
         .flatMap(x => {
-          val ses2 = x.next
+          val ses2 = x.nextStateModifier(sys)
           ses2.startSession().map(
             y => (y.session.id should not equal(x.session.id))
           )
@@ -30,7 +30,7 @@ class CompilationSystemTest extends AsyncFunSpec with Matchers {
     it ("shall recognize created session ") {
       (for {
         newSession <- sys.startSession
-        newSys = newSession.next
+        newSys = newSession.nextStateModifier(sys)
         existing <- newSys.getSession(newSession.session.id)
       } yield newSession.session.id should equal(existing.get.id)) unsafeToFuture
     }
