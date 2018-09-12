@@ -1,4 +1,11 @@
 import {CodeState} from './codeState';
+//import * as  StrupekApi  from  '../../js/target/scala-2.12/foo-fastopt';
+
+interface StrupekSessionProvider {
+  startSession() : void;
+}
+
+declare var StrupekSessionProvider: StrupekSessionProvider;
 
 export class CodeCtrl {
   state : CodeState = new CodeState();
@@ -14,6 +21,7 @@ export class CodeCtrl {
   }
 
   login() {
+    StrupekSessionProvider.startSession();
       setTimeout( () => {
         let newState = this.state.setSession("a!" + this.getState().getSessionId());
         this.setState(newState);

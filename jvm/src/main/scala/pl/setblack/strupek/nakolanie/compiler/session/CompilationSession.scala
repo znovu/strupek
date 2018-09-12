@@ -9,6 +9,7 @@ import pl.setblack.strupek.nakolanie.compiler.module.hq9.HQ9Compiler
 import pl.setblack.strupek.nakolanie.compiler.session.workers.InMemWorker
 import pl.setblack.strupek.nakolanie.context.Context
 import pl.setblack.strupek.nakolanie.scanner.ProjectProvider
+import pl.setblack.strupek.nakolanie.session.SessionId
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/}
 

@@ -15,6 +15,7 @@ module.exports = {
         extensions: ['.js', '.ts', '.tsx', '.less']
     },
     entry: {
+        strupekLib : '../../js/target/scala-2.12/foo-fastopt.js',
         app: './index.tsx',
         //mainStyle : './less/main.less'
         styles:
@@ -35,7 +36,11 @@ module.exports = {
                     useBabel: true,
                 },
             },
-
+            {
+                test: /\.js$/,
+                use: ["source-map-loader"],
+                enforce: "pre"
+            },
             {
                 test: /\.less$/,
                 use: [
@@ -52,6 +57,8 @@ module.exports = {
                     name: 'assets/img/[name].[ext]?[hash]'
                 }
             },
+
+
         ],
     },
     // For development https://webpack.js.org/configuration/devtool/#for-development
@@ -59,6 +66,12 @@ module.exports = {
     devServer: {
         port: 8080,
         noInfo: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8001',
+                pathRewrite: {'^/api' : ''}
+            }
+        }
     },
     plugins: [
         //Generate index.html in /dist => https://github.com/ampedandwired/html-webpack-plugin
@@ -69,5 +82,5 @@ module.exports = {
         }),
         miniCssLoader
 
-    ],
+    ]
 };

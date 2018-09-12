@@ -30,6 +30,7 @@ object WebServer {
     val compilationSystem = new CompilationSessionSystem()
     val sessionsEndpoint = new SessionsEndpoint(compilationSystem)
 
+
     val route: Route =
       path("hello") {
         get {
@@ -43,6 +44,13 @@ object WebServer {
     StdIn.readLine() // let it run until user presses return
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+      .onComplete(_ => {
+      println("exiting")
+      system.terminate()
+      println("exited")
+      System.exit(0)
+
+    }) // and shutdown when
+
   }
 }

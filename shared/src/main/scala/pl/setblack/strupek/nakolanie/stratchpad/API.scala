@@ -1,4 +1,4 @@
-package pl.setblack.strupek.nakolanie
+package pl.setblack.strupek.nakolanie.stratchpad
 
 object API {
 
@@ -51,5 +51,3 @@ object API {
   case class CompileResult(out: String, error : String)
 
 }
-
-

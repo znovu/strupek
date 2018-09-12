@@ -19,6 +19,7 @@ import org.typelevel.scalatest.DisjunctionValues._
 import pl.setblack.strupek.nakolanie.compiler.{CompilationResult, CompilationWorker}
 import akka.pattern.pipe
 import pl.setblack.strupek.nakolanie.context.JVMContext
+import pl.setblack.strupek.nakolanie.session.SessionId
 import scalaz.concurrent.Task
 
 import scala.collection.immutable

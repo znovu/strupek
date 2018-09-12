@@ -11,7 +11,7 @@ export class Codv extends React.Component<Props, CodeCtrl> {
 
   constructor(props) {
     super(props);
-    this.state =new CodeCtrl((code :CodeCtrl) => this.update(code));
+    this.state = new CodeCtrl((code :CodeCtrl) => this.update(code));
   }
 
 

@@ -14,11 +14,11 @@ lazy val foo = crossProject.in(file(".")).
     name := "foo",
     version := "0.1-SNAPSHOT",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "upickle" % "0.6.5",
+      "com.lihaoyi" %%% "upickle" % "0.6.6",
       "org.scalaz" %% "scalaz-core" % "7.2.21",
       "org.scalaz" %% "scalaz-concurrent" % "7.2.21",
-      "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
-
+      "org.scalatest" %%% "scalatest" % "3.0.5" % "test",
+      "org.scala-js" %% "scalajs-library" % "0.6.23"
     )
   ).
   jvmSettings(
@@ -32,12 +32,23 @@ lazy val foo = crossProject.in(file(".")).
       "com.typesafe.akka" %% "akka-http-testkit" % "10.1.1" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
       "org.typelevel" %% "scalaz-scalatest" % "1.1.1" % "test",
-      "io.verizon.delorean" %% "core" % "1.2.42-scalaz-7.2")
+      "io.verizon.delorean" %% "core" % "1.2.42-scalaz-7.2"),
+
+      mainClass := Some("WebServer")
   ).
   jsSettings(
     // Add JS-specific settings here
-    scalaJSUseMainModuleInitializer := true
-  )
+    // https://mvnrepository.com/artifact/org.scala-js/scalajs-dom
+      scalacOptions ++= {
+        val a = "file:///home/jarek/dev/strupek/nakolanie/shared/"
+        val b = "file:///home/jarek/dev/strupek/nakolanie/js/"
+        val g = "../../"
+
+        Seq(s"-P:scalajs:mapSourceURI:$a->$g", s"-P:scalajs:mapSourceURI:$b->$g")
+      },
+      libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.6",
+scalaJSUseMainModuleInitializer := true
+)
 
 lazy val fooJVM = foo.jvm
 lazy val fooJS = foo.js
