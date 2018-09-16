@@ -15,7 +15,7 @@ import upickle.default._
 
 import scala.util.Try
 
-class SessionsEndpoint( sessions: CompilationSessionSystem) {
+class SessionsEndpoint(sessions: CompilationSessionSystem) {
 
   import delorean._
 
@@ -24,41 +24,47 @@ class SessionsEndpoint( sessions: CompilationSessionSystem) {
   def createRoute(): Route = {
     val route =
       pathPrefix("session") {
-        path(Segment) { sesid =>
-          get {
-
-            val sessionTask = sessionsReference.get().getSession(SessionId(sesid))
-
-            val sessionChance: Task[StandardRoute] = sessionTask.map {
-              sessionOption: Option[CompilationSession.Interface] =>
-                sessionOption.map { existingSession =>
-                  toResult(write(existingSession.id))
-                }.getOrElse( toError(s"No such session ${sesid}") )
+        pathPrefix(Segment) { sesid =>
+          path(Segment) { module =>
+            post {
+              complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, sesid ++ " " ++ module))//TODO change
             }
-            onComplete(sessionChance.unsafeToFuture()) {
-              toResult(_)
+          } ~
+            pathEnd {
+              get {
+                val sessionTask = sessionsReference.get().getSession(SessionId(sesid))
+                val sessionChance: Task[StandardRoute] = sessionTask.map {
+                  sessionOption: Option[CompilationSession.Interface] =>
+                    sessionOption.map { existingSession =>
+                      toResult(write(existingSession.id))
+                    }.getOrElse(toError(s"No such session ${sesid}"))
+                }
+                onComplete(sessionChance.unsafeToFuture()) {
+                  toResult(_)
+                }
+              }
             }
-          }
+
         } ~
-      post {
-          entity(as[String]) { credentials =>
-            onSuccess( sessionsReference.get().startSession().unsafeToFuture()) { newSession =>
-              sessionsReference.updateAndGet(  newSession.nextStateModifier(_))
-              val createdSession = newSession.session
-              complete(HttpEntity(ContentTypes.`application/json`, write(createdSession.id)))
+          post {
+            entity(as[String]) { credentials =>
+              onSuccess(sessionsReference.get().startSession().unsafeToFuture()) { newSession =>
+                sessionsReference.updateAndGet(newSession.nextStateModifier(_))
+                val createdSession = newSession.session
+                complete(HttpEntity(ContentTypes.`application/json`, write(createdSession.id)))
+              }
             }
           }
-        }
       }
     route
   }
 
-  private def toResult(res: Try[StandardRoute] ) =  \/.fromEither(res.toEither).leftMap[StandardRoute]{
+  private def toResult(res: Try[StandardRoute]) = \/.fromEither(res.toEither).leftMap[StandardRoute] {
     t => toError(t.getLocalizedMessage)
   } merge
 
-  private def toResult(res: String):StandardRoute = complete(HttpEntity(ContentTypes.`application/json`, res))
+  private def toResult(res: String): StandardRoute = complete(HttpEntity(ContentTypes.`application/json`, res))
 
-  private def toError(error: String):StandardRoute =
+  private def toError(error: String): StandardRoute =
     complete(HttpResponse(StatusCodes.NotFound, entity = error))
 }
