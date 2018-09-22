@@ -27,4 +27,16 @@ object Errors {
     override def desc: String = s"Unknown compilation type ${compilation}"
   }
 
+  sealed trait SessionError {
+    def desc : String
+  }
+
+  final case class MissingSession(val sessionId: String) extends SessionError {
+    override def desc: String = s"Session ${sessionId} not found"
+  }
+
+  final case class ErrorInModule(val moduleError: ModuleError) extends SessionError {
+    override def desc: String = moduleError.desc
+  }
+
 }

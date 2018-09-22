@@ -22,7 +22,11 @@ trait CompilationWorker  {
   def compile(mode : CompilationMode= CompilationMode.Run()) : CompilationStream
 
   def close() : Task[CloseError]
+
+  def id() : WorkerId
 }
+
+case class WorkerId( key : String)
 
 
 object  CompileService {

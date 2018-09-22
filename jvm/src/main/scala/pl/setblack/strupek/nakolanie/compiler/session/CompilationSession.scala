@@ -2,7 +2,7 @@ package pl.setblack.strupek.nakolanie.compiler.session
 
 import pl.setblack.strupek.nakolanie.code.Errors
 import pl.setblack.strupek.nakolanie.code.Errors.ModuleError
-import pl.setblack.strupek.nakolanie.compiler.CompilationWorker
+import pl.setblack.strupek.nakolanie.compiler.{CompilationWorker, WorkerId}
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
 import pl.setblack.strupek.nakolanie.compiler.inmem.InMemCode
 import pl.setblack.strupek.nakolanie.compiler.module.hq9.HQ9Compiler
@@ -16,16 +16,18 @@ import scalaz.{-\/, \/}
 
 object CompilationSession {
 
-  trait Interface {
+  trait CompilationSessionAPI {
 
     def id: SessionId
 
     def prepare(module: String, project: String):  Task[ModuleError \/ CompilationWorker]
 
     def close(): Task[CloseError]
+
+    def getWorker( id : WorkerId) : Task[ModuleError \/ CompilationWorker]
   }
 
-  class InMemCompilationSession(override val id: SessionId)(implicit projectProvider: ProjectProvider, implicit val ctx : Context) extends Interface {
+  class InMemCompilationSession(override val id: SessionId)(implicit projectProvider: ProjectProvider, implicit val ctx : Context) extends CompilationSessionAPI {
 
     override def prepare(module: String, project: String): Task[ModuleError \/ CompilationWorker] = {
       val projectData = projectProvider.readProject(module, project)
@@ -44,6 +46,8 @@ object CompilationSession {
     }
 
     override def close(): Task[CloseError] = ???
+
+    override def getWorker(id: WorkerId): Task[ModuleError \/ CompilationWorker] = ???
   }
 
 }
