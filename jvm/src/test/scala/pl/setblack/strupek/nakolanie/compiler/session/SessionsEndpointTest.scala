@@ -4,6 +4,7 @@ import java.nio.file.Paths
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{FunSpec, Matchers}
+import pl.setblack.strupek.nakolanie.TestResources
 import pl.setblack.strupek.nakolanie.compiler.session.CompilationSystem.CompilationSessionSystem
 import pl.setblack.strupek.nakolanie.context.JVMContext
 import pl.setblack.strupek.nakolanie.scanner.ModulesService.FileBasedModulesService
@@ -13,7 +14,7 @@ import upickle.default._
 
 class SessionsEndpointTest extends FunSpec with Matchers with ScalatestRouteTest  {
 
-  val modules = new FileBasedModulesService(Paths.get("codes"))
+  val modules = new FileBasedModulesService(TestResources.modules)
   implicit val projectProvider = new ModuleBasedProjectProvider(modules)
   implicit val ctx = JVMContext
   val compilationSystem = new CompilationSessionSystem()
@@ -27,6 +28,16 @@ class SessionsEndpointTest extends FunSpec with Matchers with ScalatestRouteTest
        }
      }
 
+    it ("reads a project") {
+      Post("/session") ~> route ~> check {
+        val sessionId = read[SessionId](responseAs[String]).key
+        Post( s"/session/${sessionId}/module/hq9sample/project/prj1") ~> route ~> check {
+           val worker = responseAs[String]
+           worker should be ("15")
+        }
+
+      }
+    }
   }
 
 }
