@@ -1,5 +1,6 @@
 package pl.setblack.strupek.nakolanie.compiler.session.workers
 
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
 import akka.stream.scaladsl.Source
@@ -8,7 +9,10 @@ import pl.setblack.strupek.nakolanie.compiler.inmem.{InMemCode, InMemCompiler}
 import pl.setblack.strupek.nakolanie.compiler.{CompilationMode, CompilationWorker, CompileService, WorkerId}
 import scalaz.concurrent.Task
 
-class InMemWorker(code: InMemCode, private val compiler :  InMemCompiler) extends CompilationWorker {
+class InMemWorker(
+                   code: InMemCode,
+                   private val compiler :  InMemCompiler,
+                   private val uuid : UUID) extends CompilationWorker {
 
   private val codeRef: AtomicReference[InMemCode] = new AtomicReference[InMemCode](code)
 
@@ -21,5 +25,5 @@ class InMemWorker(code: InMemCode, private val compiler :  InMemCompiler) extend
 
   override def close(): Task[CompileService.CloseError] = ???
 
-  override def id(): WorkerId = ???
+  override def id(): WorkerId = WorkerId(this.uuid.toString)
 }

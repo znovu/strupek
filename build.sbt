@@ -18,7 +18,8 @@ lazy val foo = crossProject.in(file(".")).
       "org.scalaz" %% "scalaz-core" % "7.2.21",
       "org.scalaz" %% "scalaz-concurrent" % "7.2.21",
       "org.scalatest" %%% "scalatest" % "3.0.5" % "test",
-      "org.scala-js" %% "scalajs-library" % "0.6.23"
+      "org.scala-js" %% "scalajs-library" % "0.6.23",
+      "biz.enef" %%% "slogging" % "0.6.1"
     )
   ).
   jvmSettings(
@@ -47,7 +48,7 @@ lazy val foo = crossProject.in(file(".")).
         Seq(s"-P:scalajs:mapSourceURI:$a->$g", s"-P:scalajs:mapSourceURI:$b->$g")
       },
       libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.6",
-scalaJSUseMainModuleInitializer := true
+      scalaJSUseMainModuleInitializer := true
 )
 
 lazy val fooJVM = foo.jvm

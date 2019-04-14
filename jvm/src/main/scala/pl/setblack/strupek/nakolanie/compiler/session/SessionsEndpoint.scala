@@ -2,7 +2,7 @@ package pl.setblack.strupek.nakolanie.compiler.session
 
 import java.util.concurrent.atomic.AtomicReference
 
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Route, StandardRoute}
 import pl.setblack.strupek.nakolanie.code.Errors
@@ -14,10 +14,11 @@ import pl.setblack.strupek.nakolanie.session.SessionId.rw
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/}
 import upickle.default._
+import slogging.StrictLogging
 
 import scala.util.Try
 
-class SessionsEndpoint(sessions: CompilationSessionSystem) {
+class SessionsEndpoint(sessions: CompilationSessionSystem) extends StrictLogging{
 
   import delorean._
 
@@ -28,18 +29,22 @@ class SessionsEndpoint(sessions: CompilationSessionSystem) {
       pathPrefix("session") {
         pathPrefix(Segment) { sesid =>
           pathPrefix("module" / Segment) { moduleName =>
-            path ("project"/ Segment) { projectName =>
+            path("project" / Segment) { projectName =>
               post {
                 val sessionTask = sessionsReference.get().getSession(SessionId(sesid))
                 val projectChance: Task[SessionError \/ WorkerId] = sessionTask.flatMap {
                   sessionOption: Option[CompilationSession.CompilationSessionAPI] =>
                     sessionOption.map { existingSession =>
                       existingSession.prepare(moduleName, projectName)
-                        .map {  worker => wrapModuleError(worker.map {_.id()})} //TODO what do we return?
-                    }.getOrElse( Task.point( -\/(MissingSession(sesid))))
+                        .map { worker => wrapModuleError(worker.map {
+                          _.id()
+                        })
+                        } //TODO what do we return?
+                    }.getOrElse(Task.point(-\/(MissingSession(sesid))))
                 }
-                onComplete( projectChance.unsafeToFuture()) { x =>
-                  complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, x.toString))//TODO change
+                onComplete(projectChance.unsafeToFuture()) { x =>
+                  val res: Try[StandardRoute] = x.map(_.toString).map(toResult(_))
+                  toResult(res)
                 }
               }
             }
@@ -73,16 +78,21 @@ class SessionsEndpoint(sessions: CompilationSessionSystem) {
     route
   }
 
-  private def wrapModuleError[T](result : ModuleError \/ T ) =
-    result.leftMap ( error => ErrorInModule(error).asInstanceOf[Errors.SessionError])
-
+  private def wrapModuleError[T](result: ModuleError \/ T) =
+    result.leftMap(error => ErrorInModule(error).asInstanceOf[Errors.SessionError])
 
   private def toResult(res: Try[StandardRoute]) = \/.fromEither(res.toEither).leftMap[StandardRoute] {
-    t => toError(t.getLocalizedMessage)
+    t => toError(t)
   } merge
 
   private def toResult(res: String): StandardRoute = complete(HttpEntity(ContentTypes.`application/json`, res))
 
-  private def toError(error: String): StandardRoute =
-    complete(HttpResponse(StatusCodes.NotFound, entity = error))
+  private def toError(t: Throwable): StandardRoute = {
+    val message = t.getLocalizedMessage
+    logger.warn(message, t)
+    toError(message)
+  }
+
+  private def toError(error: String, code : StatusCode = StatusCodes.InternalServerError): StandardRoute =
+    complete(HttpResponse(StatusCodes.InternalServerError, entity = error))
 }

@@ -35,7 +35,7 @@ object CompilationSession {
         val projectStruct = prjService.readStructure
         projectStruct.flatMap { prj =>
             if ( prj.compilationType == "hq9+" ) {
-               InMemCode.fromProject(prjService).map ( new InMemWorker(_, new HQ9Compiler()))
+               InMemCode.fromProject(prjService).map ( new InMemWorker(_, new HQ9Compiler(), ctx.uuidProvider()))
             } else {
                 -\/(Errors.UnknownCompilationType(prj.compilationType)) //untested
             }
