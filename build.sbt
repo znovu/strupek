@@ -3,15 +3,15 @@ name := "Strupek/nakolanie"
 scalaVersion in ThisBuild := "2.12.5"
 
 lazy val root = project.in(file(".")).
-  aggregate(fooJS, fooJVM).
+  aggregate(strupekJS, strupekJVM).
   settings(
     publish := {},
     publishLocal := {}
   )
 
-lazy val foo = crossProject.in(file(".")).
+lazy val strupek = crossProject.in(file(".")).
   settings(
-    name := "foo",
+    name := "strupek",
     version := "0.1-SNAPSHOT",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "upickle" % "0.6.6",
@@ -51,5 +51,5 @@ lazy val foo = crossProject.in(file(".")).
       scalaJSUseMainModuleInitializer := true
 )
 
-lazy val fooJVM = foo.jvm
-lazy val fooJS = foo.js
+lazy val strupekJVM = strupek.jvm
+lazy val strupekJS = strupek.js

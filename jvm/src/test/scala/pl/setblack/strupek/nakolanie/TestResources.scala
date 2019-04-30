@@ -10,3 +10,35 @@ object TestResources {
   val hq9sample = Paths.get(classOf[CodeModuleServiceTest].getResource("/modules/hq9sample").toURI)
 
 }
+
+
+
+
+object Crosser {
+
+  def main(args: Array[String]): Unit = {
+    cross()
+  }
+
+import RandomAbsolute.random
+  def cross(): Int = {
+
+    def mergeBits(bits: List[Boolean], crossingPlace: Int, bits1:List[Boolean]):List[Boolean] = {
+      bits.take(crossingPlace) ++ bits1.drop(crossingPlace)
+    }
+
+    random(7)  ( it => {
+      println(it)
+      4
+    }
+    )
+
+  }
+}
+
+object RandomAbsolute {
+
+  def random[T](bound:Int) (funit :Int => T)  = {
+      funit(bound*3)
+  }
+}

@@ -17,11 +17,15 @@ object ModulesService {
 
   class FileBasedModulesService(private val base: Path) extends ModulesService {
     override def codeModule(name: String): InputChance = {
-      val modulePath = base.resolve(name)
-      if (isBadName(name) ||  !Files.isDirectory(modulePath)) {
+      if (isBadName(name)) {
         Maybe.Empty()
       } else {
-        Maybe.Just(new scanner.CodeModule.CodeModule(modulePath))
+        val modulePath = base.resolve(name)
+        if (!Files.isDirectory(modulePath)) {
+          Maybe.Empty()
+        } else {
+          Maybe.Just(new scanner.CodeModule.CodeModule(modulePath))
+        }
       }
     }
 
