@@ -1,5 +1,7 @@
 package pl.setblack.strupek.nakolanie.stratchpad
 
+import pl.setblack.strupek.nakolanie.code.Errors
+
 object API {
 
 
@@ -10,6 +12,7 @@ object API {
     * Long session (user is authenticated)
     */
   case class UserSessionId (id :String)
+
 
   /**
     * single compliation session
@@ -33,8 +36,6 @@ object API {
   }
 
 
-
-
   case class FileId(id: String)
 
   case class CompilationFile ( id : FileId, content : String, alternatives: Seq[AlternativeContent])
@@ -50,4 +51,19 @@ object API {
 
   case class CompileResult(out: String, error : String)
 
+
+  /**
+    * Generic API response
+    */
+  case class Response[T] ( data: Option[T], error : String = "")  {
+    def this(t:T) = this ( Some(t), "");
+  }
+
+  object Response {
+    def error[T](error: Errors.SessionError): Response[T] = Response[T](None, error.desc)
+    def ok[T](t: T) : Response[T] = Response[T](Some(t))
+  }
+
 }
+
+

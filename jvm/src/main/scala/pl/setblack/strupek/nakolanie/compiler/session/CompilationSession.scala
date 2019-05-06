@@ -2,14 +2,14 @@ package pl.setblack.strupek.nakolanie.compiler.session
 
 import pl.setblack.strupek.nakolanie.code.Errors
 import pl.setblack.strupek.nakolanie.code.Errors.ModuleError
-import pl.setblack.strupek.nakolanie.compiler.{CompilationWorker, WorkerId}
+import pl.setblack.strupek.nakolanie.compiler.CompilationWorker
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
 import pl.setblack.strupek.nakolanie.compiler.inmem.InMemCode
 import pl.setblack.strupek.nakolanie.compiler.module.hq9.HQ9Compiler
 import pl.setblack.strupek.nakolanie.compiler.session.workers.InMemWorker
 import pl.setblack.strupek.nakolanie.context.Context
 import pl.setblack.strupek.nakolanie.scanner.ProjectProvider
-import pl.setblack.strupek.nakolanie.session.SessionId
+import pl.setblack.strupek.nakolanie.session.{SessionId, WorkerId}
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/}
 

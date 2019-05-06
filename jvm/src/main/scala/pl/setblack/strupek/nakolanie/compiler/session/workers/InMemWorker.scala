@@ -6,7 +6,8 @@ import java.util.concurrent.atomic.AtomicReference
 import akka.stream.scaladsl.Source
 import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
 import pl.setblack.strupek.nakolanie.compiler.inmem.{InMemCode, InMemCompiler}
-import pl.setblack.strupek.nakolanie.compiler.{CompilationMode, CompilationWorker, CompileService, WorkerId}
+import pl.setblack.strupek.nakolanie.compiler.{CompilationMode, CompilationWorker, CompileService}
+import pl.setblack.strupek.nakolanie.session.WorkerId
 import scalaz.concurrent.Task
 
 class InMemWorker(

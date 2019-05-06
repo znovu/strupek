@@ -2,6 +2,17 @@
 
 ## API
 
+
+general answer
+```json
+{
+    data: {}, //if any
+    error: {} //if any
+}
+
+```
+'
+
 ### Session
 
 `POST /session`

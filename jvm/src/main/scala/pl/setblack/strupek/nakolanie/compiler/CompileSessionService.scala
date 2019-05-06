@@ -7,6 +7,7 @@ import akka.stream.scaladsl.Source
 import pl.setblack.strupek.nakolanie.compiler.CompilationMode.CompilationMode
 import pl.setblack.strupek.nakolanie.compiler.CompileService.CloseError
 import pl.setblack.strupek.nakolanie.compiler.CompileSession.CompilationStream
+import pl.setblack.strupek.nakolanie.session.WorkerId
 import scalaz.concurrent.Task
 
 
@@ -26,7 +27,7 @@ trait CompilationWorker  {
   def id() : WorkerId
 }
 
-case class WorkerId( key : String)
+
 
 
 object  CompileService {

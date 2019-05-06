@@ -7,10 +7,10 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Route, StandardRoute}
 import pl.setblack.strupek.nakolanie.code.Errors
 import pl.setblack.strupek.nakolanie.code.Errors.{ErrorInModule, MissingSession, ModuleError, SessionError}
-import pl.setblack.strupek.nakolanie.compiler.WorkerId
 import pl.setblack.strupek.nakolanie.compiler.session.CompilationSystem.CompilationSessionSystem
-import pl.setblack.strupek.nakolanie.session.SessionId
+import pl.setblack.strupek.nakolanie.session.{SessionId, WorkerId}
 import pl.setblack.strupek.nakolanie.session.SessionId.rw
+import pl.setblack.strupek.nakolanie.stratchpad.API.Response
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/}
 import upickle.default._
@@ -43,8 +43,13 @@ class SessionsEndpoint(sessions: CompilationSessionSystem) extends StrictLogging
                     }.getOrElse(Task.point(-\/(MissingSession(sesid))))
                 }
                 onComplete(projectChance.unsafeToFuture()) { x =>
-                  val res: Try[StandardRoute] = x.map(_.toString).map(toResult(_))
-                  toResult(res)
+                  val   y: Try[StandardRoute] = x
+                    .map( toResult(_))
+                    .map( write(_))
+                    .map( toResult(_))
+
+                  //val res: Try[StandardRoute] = x.map(_.toString).map(toResult(_))
+                  toResult(y)
                 }
               }
             }
@@ -81,6 +86,12 @@ class SessionsEndpoint(sessions: CompilationSessionSystem) extends StrictLogging
   private def wrapModuleError[T](result: ModuleError \/ T) =
     result.leftMap(error => ErrorInModule(error).asInstanceOf[Errors.SessionError])
 
+  private def toResult(res : SessionError \/ WorkerId ) =
+      res
+        .leftMap (  error => Response.error(error).asInstanceOf[Response[WorkerId]] )
+        .map( result => Response(Some(result)) )
+        .merge
+
   private def toResult(res: Try[StandardRoute]) = \/.fromEither(res.toEither).leftMap[StandardRoute] {
     t => toError(t)
   } merge
@@ -93,6 +104,19 @@ class SessionsEndpoint(sessions: CompilationSessionSystem) extends StrictLogging
     toError(message)
   }
 
+  import Bogus._
+
   private def toError(error: String, code : StatusCode = StatusCodes.InternalServerError): StandardRoute =
-    complete(HttpResponse(StatusCodes.InternalServerError, entity = error))
+    complete(HttpResponse(StatusCodes.InternalServerError, entity = write(Response[Bogus](None, error))))
+}
+
+
+case class Bogus ( id: String) {
+
+}
+
+object Bogus  {
+  import upickle.default.{macroRW, ReadWriter => RW}
+  implicit def bogusRW : RW[Bogus] = macroRW
+  implicit def bogusResponseRW  : RW [Response[Bogus]] = macroRW
 }
